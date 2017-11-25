@@ -1,0 +1,25 @@
+type project
+title
+    TomatoTime
+owners
+    Boloutare Doubeni
+authors 
+    Boloutare Doubeni
+projectUrl
+    https://github.co/boloutaredoubeni/TomatoTime
+iconUrl
+    https://raw.githubusercontent.com/boloutaredoubeni/TomatoTime/master/docs/files/img/logo.png
+licenseUrl
+    https://github.co/boloutaredoubeni/TomatoTime/blob/master/LICENSE.txt
+requireLicenseAcceptance
+    false
+copyright
+    Copyright 2015
+tags
+    fsharp
+summary
+    Timer and Clock app
+description
+    Timer and Clock app
+
+
