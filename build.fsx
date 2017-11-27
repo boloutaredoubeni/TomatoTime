@@ -2,15 +2,19 @@
 // FAKE build script
 // --------------------------------------------------------------------------------------
 
+#r "packages/build/System.Runtime/lib/net462/System.Runtime.dll"
 #r @"packages/build/FAKE/tools/FakeLib.dll"
 open Fake
 open Fake.Git
 open Fake.AssemblyInfoFile
 open Fake.ReleaseNotesHelper
-open Fake.UserInputHelper
+
+#r "packages/build/FSharp.Compiler.Service/lib/netstandard1.6/FSharp.Compiler.Service.dll"
+#r "packages/build/Fantomas/lib/FantomasLib.dll"
+open Fantomas.FakeHelpers
+open Fantomas.FormatConfig
 
 open System
-open System.IO
 open System.Diagnostics
 
 // --------------------------------------------------------------------------------------
@@ -119,7 +123,7 @@ Target "CopyBinaries" (fun _ ->
 // --------------------------------------------------------------------------------------
 // Clean build results
 
-let vsProjProps = 
+let vsProjProps =
 #if MONO
     [ ("DefineConstants","MONO"); ("Configuration", configuration) ]
 #else
@@ -339,6 +343,40 @@ Target "Release" (fun _ ->
     |> Async.RunSynchronously
 )
 
+// --------------------------------------------------------------------------------------
+// Code Formatting
+
+let fantomasConfig =
+    { FormatConfig.Default with
+            IndentSpaceNum = 2
+            PageWidth = 120
+            ReorderOpenDeclaration = true }
+
+Target "CheckCodeFormat" (fun _ ->
+    !! "src/**/*.fs"
+      |> checkCode fantomasConfig
+)
+
+Target "FormatCode" (fun _ ->
+    !! "src/**/*.fs"
+      |> formatCode fantomasConfig
+      |> Log "Formatted files: "
+)
+
+Target "CheckTestCodeFormat" (fun _ ->
+    !! "test/**/*.fs"
+      |> checkCode fantomasConfig
+)
+
+Target "FormatTestCode" (fun _ ->
+    !! "test/**/*.fs"
+      |> formatCode fantomasConfig
+      |> Log "Formatted files: "
+)
+
+Target "Format" DoNothing
+Target "RunFormat" DoNothing
+
 Target "BuildPackage" DoNothing
 
 // --------------------------------------------------------------------------------------
@@ -354,7 +392,18 @@ Target "All" DoNothing
   ==> "GenerateDocs"
   ==> "NuGet"
   ==> "BuildPackage"
+  ==> "Format"
   ==> "All"
+
+"RunFormat"
+  // ==> "FormatTestCode"
+  // ==> "FormatCode"
+  ==> "CheckTestCodeFormat"
+  ==> "CheckCodeFormat"
+  ==> "Format"
+
+"RunFormat"
+  ==> "RunTests"
 
 "GenerateHelp"
   ==> "GenerateReferenceDocs"

@@ -5,21 +5,25 @@ source https://nuget.org/api/v2
 #
 # To increase the minimum assumed .NET Framework, change the TargetFrameworkVersion in the .fsproj project files.
 #
-# To increase the minimum assumed F# version to F# 4.1, change to 
+# To increase the minimum assumed F# version to F# 4.1, change to
 #     nuget FSharp.Core ~> 4.1.0 redirects: force
 
 nuget FSharp.Core ~> 4.1.0 redirects: force
+nuget NodaTime
 
 group Build
   source https://nuget.org/api/v2
-  
+
   nuget FAKE
   nuget FSharp.Formatting
+  nuget Fantomas
+  nuget FSharp.Compiler.Service ~> 11.0.4.0
 
   github fsharp/FAKE modules/Octokit/Octokit.fsx
 
 group Test
   source https://nuget.org/api/v2
-  
+
   nuget NUnit ~> 2
   nuget NUnit.Runners ~> 2
+  nuget NodaTime.Testing
